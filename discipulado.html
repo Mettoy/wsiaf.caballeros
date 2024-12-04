@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discipulado</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Estilo para el formulario plegable */
+        .add-person-form {
+            display: none; /* El formulario estará oculto inicialmente */
+            margin-bottom: 20px;
+        }
+
+        .yellow {
+            background-color: yellow;
+        }
+
+        .green {
+            background-color: lightgreen;
+        }
+
+        .red {
+            background-color: red;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <div class="menu-toggle" onclick="toggleMenu()">&#9776;</div>
+        <div class="logo">Sistema único caballeros</div>
+    </div>
+
+    <div class="content">
+        <h2>Discipulado</h2>
+
+        <!-- Cantidad de personas registradas -->
+        <p>Total de personas registradas: <span id="personCount">0</span></p>
+
+        <!-- Botón para alternar el formulario plegable -->
+        <button onclick="toggleForm()">Agregar Persona</button>
+
+        <!-- Formulario para agregar personas -->
+        <div class="add-person-form" id="addPersonFormContainer">
+            <h3>Agregar Persona</h3>
+            <form id="addPersonForm">
+                <input type="text" id="name" placeholder="Nombre" required>
+                <input type="text" id="address" placeholder="Dirección" required>
+                <input type="text" id="phone" placeholder="Teléfono" required>
+                <input type="text" id="discipler" placeholder="Discipulador" required>
+                <input type="text" id="comment" placeholder="Comentario" required>
+                <input type="date" id="date" required>
+                <button type="submit">Agregar Persona</button>
+            </form>
+        </div>
+
+        <!-- Buscador -->
+        <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="Buscar por nombre...">
+
+        <!-- Tabla de discipulado -->
+        <table id="discipuladoTable">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Dirección</th>
+                    <th>Teléfono</th>
+                    <th>Discipulador</th>
+                    <th>Comentario</th>
+                    <th>Fecha</th>
+                    <th>Finalizó</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Aquí se agregarán las filas de la tabla -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Función para contar las personas registradas en la tabla
+        function countPeopleInTable() {
+            const table = document.getElementById("discipuladoTable");
+            const rows = table.getElementsByTagName("tr");
+            let count = 0;
+
+            // Contar las filas, excluyendo la cabecera (thead)
+            for (let i = 1; i < rows.length; i++) {
+                count++;
+            }
+
+            // Mostrar el número total de personas en la tabla
+            document.getElementById("personCount").textContent = count;
+        }
+
+        // Llamar a la función al cargar la página para contar las personas
+        window.onload = countPeopleInTable;
+
+        // Función de búsqueda en la tabla
+        function searchTable() {
+            const input = document.getElementById("searchInput");
+            const filter = input.value.toUpperCase();
+            const table = document.getElementById("discipuladoTable");
+            const tr = table.getElementsByTagName("tr");
+
+            // Recorremos todas las filas de la tabla
+            for (let i = 1; i < tr.length; i++) {
+                let td = tr[i].getElementsByTagName("td")[0]; // Tomamos la primera columna (Nombre)
+                if (td) {
+                    const txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        // Función para agregar una nueva persona a la tabla
+        document.getElementById("addPersonForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevenir el envío del formulario
+
+            // Obtener los valores del formulario
+            const name = document.getElementById("name").value;
+            const address = document.getElementById("address").value;
+            const phone = document.getElementById("phone").value;
+            const discipler = document.getElementById("discipler").value;
+            const comment = document.getElementById("comment").value;
+            const date = document.getElementById("date").value;
+
+            // Crear una nueva fila en la tabla
+            const table = document.getElementById("discipuladoTable").getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+
+            newRow.innerHTML = `
+                <td>${name}</td>
+                <td>${address}</td>
+                <td>${phone}</td>
+                <td>${discipler}</td>
+                <td>${comment}</td>
+                <td>${date}</td>
+                <td>
+                    <select onchange="updateRowStatus(this)">
+                        <option value="pendiente">Pendiente</option>
+                        <option value="si">Sí</option>
+                        <option value="no">No</option>
+                    </select>
+                </td>
+                <td><button onclick="editRow(this)">Editar</button> <button onclick="deleteRow(this)">Eliminar</button></td>
+            `;
+
+            // Limpiar los campos del formulario
+            document.getElementById("addPersonForm").reset();
+
+            // Actualizar el conteo de personas
+            countPeopleInTable();
+        });
+
+        // Función para editar una fila
+        function editRow(button) {
+            const row = button.parentElement.parentElement;
+            const cells = row.getElementsByTagName("td");
+
+            // Rellenar los campos con los datos actuales de la fila
+            document.getElementById("name").value = cells[0].textContent;
+            document.getElementById("address").value = cells[1].textContent;
+            document.getElementById("phone").value = cells[2].textContent;
+            document.getElementById("discipler").value = cells[3].textContent;
+            document.getElementById("comment").value = cells[4].textContent;
+            document.getElementById("date").value = cells[5].textContent;
+
+            // Eliminar la fila actual para reemplazarla con la nueva
+            row.remove();
+            countPeopleInTable();
+        }
+
+        // Función para eliminar una fila
+        function deleteRow(button) {
+            const row = button.parentElement.parentElement;
+            row.remove();
+
+            // Actualizar el conteo de personas
+            countPeopleInTable();
+        }
+
+        // Función para alternar la visibilidad del formulario
+        function toggleForm() {
+            const form = document.getElementById("addPersonFormContainer");
+            // Alternar entre mostrar u ocultar el formulario
+            if (form.style.display === "none" || form.style.display === "") {
+                form.style.display = "block";
+            } else {
+                form.style.display = "none";
+            }
+        }
+
+        // Función para actualizar el color de la fila según el estado de "Finalizó"
+        function updateRowStatus(selectElement) {
+            const row = selectElement.parentElement.parentElement;
+            const status = selectElement.value;
+
+            // Eliminar las clases de color anteriores
+            row.classList.remove("yellow", "green", "red");
+
+            // Asignar el color según el estado
+            if (status === "pendiente") {
+                row.classList.add("yellow");
+            } else if (status === "si") {
+                row.classList.add("green");
+            } else if (status === "no") {
+                row.classList.add("red");
+            }
+        }
+    </script>
+
+</body>
+
+</html>
