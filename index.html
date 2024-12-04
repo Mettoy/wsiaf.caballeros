@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio de Sesión</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Contenedor de la página de inicio de sesión -->
+    <div class="login-container">
+        <div class="login-card">
+            <h2>Inicio de Sesión</h2>
+            <form id="loginForm">
+                <label for="user">Usuario:</label>
+                <input type="text" id="user" name="user" required>
+
+                <button type="submit">Iniciar sesión</button>
+                <p id="errorMessage" style="color:red; display:none;">Usuario no válido.</p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Usuarios predefinidos
+        const validUsers = [
+            "dmettoy", "rlanzas", "asesormr", "presidentemr", 
+            "vicepresidentemr", "secretariomr", "tesoreromr", "vocalmr"
+        ];
+
+        // Función para manejar el inicio de sesión
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevenir que el formulario se envíe
+
+            const username = document.getElementById("user").value.trim();
+
+            // Verificar si el usuario existe
+            if (validUsers.includes(username)) {
+                // Guardar el nombre de usuario en el almacenamiento local
+                localStorage.setItem('username', username);
+
+                // Redirigir al usuario a la página de inicio
+                window.location.href = "inicio.html"; // Cambiar a la página a la que quieras redirigir
+            } else {
+                // Mostrar mensaje de error
+                document.getElementById("errorMessage").style.display = "block";
+            }
+        });
+    </script>
+
+</body>
+</html>
