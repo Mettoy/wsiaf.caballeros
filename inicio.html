@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio</title>
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        .navbar {
+            background-color: #003366;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+
+        .menu-toggle {
+            font-size: 24px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .logo {
+            font-size: 20px;
+        }
+
+        .menu {
+            display: none;
+            background-color: #003366;
+            color: white;
+            position: absolute;
+            top: 50px;
+            left: 0;
+            width: 100%;
+            padding: 10px;
+        }
+
+        .menu.active {
+            display: block;
+        }
+
+        .menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu ul li {
+            padding: 10px 0;
+        }
+
+        .menu ul li a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .menu ul li a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Barra de navegación -->
+    <div class="navbar">
+        <div class="menu-toggle" onclick="toggleMenu()">&#9776;</div>
+        <div class="logo">Sistema Unificado</div>
+        <div class="user-info">
+            <span id="usernameDisplay"></span>
+        </div>
+    </div>
+
+    <!-- Menú desplegable -->
+    <div id="menu" class="menu">
+        <ul id="menuItems">
+            <!-- Las opciones se generarán dinámicamente -->
+        </ul>
+    </div>
+
+    <script>
+        // Usuarios con acceso completo
+        const fullAccessUsers = [
+            "tesoreromr", 
+            "secretariomr", 
+            "asesormr",
+            "presidentemr",
+            "vicepresidentemr"
+        ];
+
+        const menuOptions = {
+            general: [
+                
+            { name: "Discipulado", link: "discipulado.html" },
+            { name: "Cultos", link: "asistencia.html" },
+            { name: "Discipulado", link: "discipulado.html" },
+                { name: "Visitación", link: "visitacion.html" },
+            ],
+            fullAccess: [
+                
+                { name: "Nuevos Usuarios", link: "nuevos-usuarios.html" },
+                { name: "Administrar Roles", link: "admi-roles.html" },
+                { name: "Ver Reportes", link: "ver-reportes.html" },
+            ]
+        };
+
+        // Recuperar el nombre de usuario desde localStorage
+        const username = localStorage.getItem("username");
+
+        // Actualizar el nombre del usuario en pantalla
+        if (username) {
+            document.getElementById("usernameDisplay").textContent = `Bienvenido, ${username}`;
+        } else {
+            window.location.href = "inicio-sesion.html";
+        }
+
+        // Generar el menú dinámicamente
+        function generateMenu() {
+            const menuItems = document.getElementById("menuItems");
+
+            // Agregar opciones generales
+            menuOptions.general.forEach((option) => {
+                const li = document.createElement("li");
+                li.innerHTML = `<a href="${option.link}">${option.name}</a>`;
+                menuItems.appendChild(li);
+            });
+
+            // Agregar opciones completas si el usuario tiene acceso total
+            if (fullAccessUsers.includes(username)) {
+                menuOptions.fullAccess.forEach((option) => {
+                    const li = document.createElement("li");
+                    li.innerHTML = `<a href="${option.link}">${option.name}</a>`;
+                    menuItems.appendChild(li);
+                });
+            }
+        }
+
+        // Mostrar/ocultar el menú
+        function toggleMenu() {
+            const menu = document.getElementById("menu");
+            menu.classList.toggle("active");
+        }
+
+        // Generar el menú al cargar la página
+        generateMenu();
+    </script>
+</body>
+
+</html>
